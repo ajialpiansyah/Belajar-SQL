@@ -1,0 +1,267 @@
+
+DATABASE
+
+**Menampilkan database**
+  >show databases;
+**Membuat database**
+  >create database nama_database;
+	- tidak case sensitif (huruf kapital tidak berppengaruh)
+	- nama database biasanya menggunakan huruf kecil
+**Menghapus database**
+  >drop database nama_database;
+	- tabel yang terdapat pada db tsb akan hilang
+**Memilih database**
+  >use nama_database;
+
+**Menampilkan table**
+  >show tables;
+
+TABLE
+
+**Membuat tabel**
+CREATE TABLE barang
+(
+kode INT,
+nama VARCHAR(100),
+harga INT
+) ENGINE = InnoDB;
+
+**Memasukkan nilai**
+INSERT INTO barang(kode, nama, harga, jumlah)
+VALUES('111', 'Kopi', 10000, 2),
+      ('112', 'Gula', 8000, 2),
+      ('113', 'Garam', 5000, 3);
+
+**Melihat isi tabel**
+SELECT * FROM barang;
+
+**Melihat isi kolom tertentu pada tabel**
+select id, name, price from products; 
+
+**Membuat ulang tabel**
+TRUNCATE barang;
+
+**Menghapus table**
+DROP TABLE barang;
+
+**Menampilkan storage engines**
+  >show engines;
+
+**Melihat struktur tabel**
+  >describe nama_table;
+
+**Mengubah table**
+  >ALTER TABLE nama_table
+	ADD COLUMN nama_column TEXT,
+	DROP COLUMN nama,
+	RENAME COLUMN nama TO nama_baru,
+	MODIFY nama VARCHAR(200),  [mengubah type kolom]
+	MODIFY nama VARCHAR(100) AFTER jumlah,
+	MODIFY nama VARCHAR(100) FIRST;
+
+**Default value(dari pembuatan tabel)**
+  >create table barang
+   (
+   id int not null,
+   nama varchar(100) not null,
+   harga int not null default 0,
+   jumlah int not null default 0
+   );
+
+**Default value(dari alter table)
+  alter table barang 
+  modify id int not null,
+  modify harga int not null default 0,
+  modify jumlah int not null default 0;
+
+**Timestamp**
+  alter table barang
+  add waktu_dibuat timestamp not null default current_timestamp;
+
+**Menambah primary key ketika membuat tabel**
+create table products
+(
+id int,
+name varchar(100),
+category varchar(100),
+price int,
+quantity int,
+primary key (id)
+);
+
+**Menambah primary key di table**
+alter table products
+	add primary key(id);
+
+**Where clause**
+select id, name, price, quantity from products 
+where quantity=100;
+select * from products 
+where name='Mie Ayam Original';
+
+**Mengubah satu kolom**
+update products 
+set kategori = 'Makanan'
+where id = '001';
+
+update products
+set kategori = 'Minuman'
+where category = 'Minuman';
+
+**Menambah kolom kategori**
+alter table products 
+add column kategori enum('Makanan','Minuman','Lain-Lain');
+
+**Mengubah beberapa kolom**
+update penjualan
+set produk = 'Rinso', jumlah = 3
+where id = 001;
+
+**Mengubah dengan value di kolom**
+update penjualan 
+set jumlah = jumlah + 3 
+where id=001; 
+
+**Mengapus data**
+delete from penjualan 
+where id = 001;
+
+**Alias untuk kolom**
+select id as 'kode',
+	   produk as 'nama barang',
+	   jumlah as 'banyak barang'
+from penjualan 
+
+**Alias untuk tabel**
+select p.id as 'kode',
+	   p.produk as 'nama barang',
+	   p.jumlah as 'banyak barang'
+from penjualan as p;
+
+**Where operator**
+select * from penjualan where jumlah>=10;
+select * from penjualan where id!=001; #atau bisa menggunakan operator <>
+
+**Mencari data dengan operator DAN**
+select * from penjualan where produk='Rinso' and jumlah=0;
+
+**Mencari data dengan operator OR**
+select * from penjualan where produk = 'Rinso' or jumlah>10;
+
+**Prioritas dengan kurung**
+select * from penjualan where (id=002  and produk='Fiesta') or jumlah>10;
+
+**Mencari menggunakan like operator**
+select * from penjualan where produk like '%in%'; #isi
+select * from penjualan where produk like 'F%'; #awalan
+select * from penjualan where produk like '%a'; #akhiran
+
+**Mencari menggunakan NULL OPERATOR**
+select * from penjualan where produk is null;
+select * from penjualan where produk is not null;
+
+**Mencari menggunakan BETWEEN operator**
+select * from penjualan where jumlah between 1 and 18;
+
+**Mencari menggunakan IN operator**
+select * from penjualan where id in (001,002)
+
+**Mengurutkan data**
+select * from penjualan order by jumlah desc;
+
+**Membatasi hasil query**
+select * from penjualan where jumlah>0 
+order by jumlah limit 2;
+
+**Skip hasil  query**
+select * from penjualan where jumlah>0
+order by jumlah limit 1,2 #skip satu, tampilkan 2
+
+**Menghilangkan data duplikat**
+select distinct produk from penjualan;
+
+**Menggunakan arithmetic operator**
+select 10+10 as hasil;
+select id, jumlah - 2 as 'jumlah baru' from penjualan
+
+##Menggunakan mathematical function
+select pi();
+
+##Aggregate function 
+select sum(quantity) as 'Produk tersedia' from produksi
+select count(id) as 'Total Produk' from produksi
+select max(price) as 'Harga Termahal' from produksi
+
+##Menggunakan group by(merge baris yang memiliki kategori sama)
+select category, count(id) as 'Total Produk' from produksi
+group by category
+select category, max(price) as 'Harga Termahal' from produksi
+group by category
+
+##Having clause (untuk memfilter hasil aggregate function, krn gbs pake where)
+select category, count(id) as 'Total' from produksi
+group by category having Total>3
+select category, sum(quantity) as 'Stok' from produksi 
+group by category having Stok>500
+
+##Membuat tabel dengan unique constraint 
+create table costumers
+(
+id int not null auto_increment,
+email varchar(100) not null,
+first_name varchar(100) not null,
+last_name varchar(100),
+primary key(id),
+unique key email_unique(email)
+)
+
+##Menambah/menghapus unique constraint
+alter table costumers 
+drop constraint email_unique; 
+alter table costumers 
+add constraint email_unique unique (email); 
+
+##Membuat table dengan check constraint
+create table produksi
+(
+id varchar(10) not null,
+name varchar(100),
+description varchar(100),
+price int,
+quantity int,
+created_at timestamp not null default current_timestamp,
+primary key(id),
+constraint price_check check (price>0)
+);
+
+##Menambah/menghapus check constraint
+alter table produksi
+add constraint price_check check (price>0)
+
+##Membuat tabel dengan foreign key
+create table wishlist
+(
+id INT not null auto_increment,
+id_product varchar(10) not null,
+description text,
+primary key(id),
+constraint fk_wishlist_product foreign key (id_product) references produksi(id)
+)
+
+##menambah atau menghapus foreign key
+alter table wishlist 
+drop constraint fk_wishlist_product;
+alter table wishlist 
+add constraint fk_wishlist_product foreign key (id_product) references produksi(id)
+
+##Mengubah behavior menghapus relasi
+alter table wishlist
+add constraint fk_wishlist_product foreign key(id_product) references produksi(id)
+on delete cascade on update cascade 
+
+
+
+
+
+
+
