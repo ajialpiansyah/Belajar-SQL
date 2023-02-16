@@ -99,7 +99,7 @@ where quantity=100;
 select * from products 
 where name='Mie Ayam Original';
 
-**Mengubah satu kolom**
+**Mengubah isi suatu tabel (kolom kategori) dimana diberikan id=001**
 update products 
 set kategori = 'Makanan'
 where id = '001';
