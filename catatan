@@ -1,0 +1,4 @@
+- group by
+  - digunakan bersama dengan aggregate function
+  - default : merge baris yang memiliki kategori sama (jika tdk menggunakan aggregate function)
+  
